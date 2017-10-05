@@ -1,0 +1,91 @@
+<html>
+    <p id="text"/>
+    <script src="keras.js"></script>
+    <script>
+        const model = new KerasJS.Model({
+            filepaths: {
+                model: 'model.json',
+                weights: 'model_weights.buf',
+                metadata: 'model_metadata.json'
+            },
+            gpu: true
+        })
+        var char_indices = { ';': 26, 't': 52, '7': 22, 'y': 57, ']': 31, 'x': 56, 'f': 38, '%': 5, '>': 28, 'r': 50, "'": 7, 'm': 45, '*': 10, '"': 3, '3': 18, '?': 29, '-': 12, '(': 8, ',': 11, 'j': 42, 'z': 58, '\n': 0, 'a': 33, 'd': 36, '0': 15, 'c': 35, '|': 60, 'v': 54, 'p': 48, '2': 17, '6': 21, 'g': 39, '4': 19, '.': 13, '1': 16, '_': 32, 'l': 44, '5': 20, 'u': 53, '}': 61, '/': 14, '=': 27, 'n': 46, '{': 59, 'w': 55, 'o': 47, ':': 25, 'b': 34, '&': 6, ' ': 1, 'k': 43, '8': 23, 'e': 37, 's': 51, 'q': 49, '[': 30, 'h': 40, '!': 2, 'i': 41, '9': 24, '#': 4, ')': 9 };
+        var indices_char = { 0: '\n', 1: ' ', 2: '!', 3: '"', 4: '#', 5: '%', 6: '&', 7: "'", 8: '(', 9: ')', 10: '*', 11: ',', 12: '-', 13: '.', 14: '/', 15: '0', 16: '1', 17: '2', 18: '3', 19: '4', 20: '5', 21: '6', 22: '7', 23: '8', 24: '9', 25: ':', 26: ';', 27: '=', 28: '>', 29: '?', 30: '[', 31: ']', 32: '_', 33: 'a', 34: 'b', 35: 'c', 36: 'd', 37: 'e', 38: 'f', 39: 'g', 40: 'h', 41: 'i', 42: 'j', 43: 'k', 44: 'l', 45: 'm', 46: 'n', 47: 'o', 48: 'p', 49: 'q', 50: 'r', 51: 's', 52: 't', 53: 'u', 54: 'v', 55: 'w', 56: 'x', 57: 'y', 58: 'z', 59: '{', 60: '|', 61: '}' };
+
+        const X = 40;
+        const Y = 62;
+        var data0 = [];
+        data0.length = X * Y;
+        for (var i = 0; i < X * Y; i++) {
+            data0[i] = 0;
+        }
+        async function predict(text) {
+            var data = data0.slice();
+            //alert(char_indices[text[0]])
+            for (var i = 0; i < X * Y; i++) {
+                data[i] = 0;
+            }
+            for (var x = 0; x < 40; x++) {
+                y = char_indices[text[x]]
+                data[x * Y + y] = 1;
+            }
+            try {
+                await model.ready()
+                const inputData = {
+                    'input': new Float32Array(data)
+                }
+                const outputData = await model.predict(inputData)
+                output = outputData['output'];
+
+                var dict = {};
+                var max = -1;
+                var char = 'N';
+                for (var i = 0; i < Y; i++) {
+                    if (output[i] > max) {
+                        max = output[i];
+                        char = indices_char[i];
+                    }
+                }
+                //alert(char);
+                return char;
+            } catch (err) {
+                // handle error
+            }
+        };
+
+        async function run() {
+            var text = "eturned. his name... is discord.\nflutter";
+            var total_text = text;
+            document.getElementById("text").innerHTML = total_text;
+            var completed = true;
+            async function nextchar() {   
+                var char = await predict(text);
+
+                console.log(char);
+
+                text = text.substr(1, 39) + char;
+                total_text = total_text + char;
+
+                document.getElementById("text").innerHTML = total_text;
+
+                completed = true;
+            }
+
+            setInterval(function() {
+                if (completed) {
+                    completed = false;
+                    nextchar()
+                }
+                //console.log(completed);
+            }, 0);
+        }
+
+        run()
+
+    </script>
+
+<body>
+</body>
+
+</html>
