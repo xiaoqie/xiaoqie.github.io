@@ -57,7 +57,7 @@
         async function run() {
             var text = "eturned. his name... is discord.\nflutter";
             var total_text = text;
-            document.getElementById("text").innerHTML = total_text;
+            document.getElementById("text").innerHTML = total_text.replace(/\n/g, "<br/>");
             var completed = true;
             async function nextchar() {   
                 var char = await predict(text);
@@ -67,7 +67,7 @@
                 text = text.substr(1, 39) + char;
                 total_text = total_text + char;
 
-                document.getElementById("text").innerHTML = total_text;
+                document.getElementById("text").innerHTML = total_text.replace(/\n/g, "<br/>");
 
                 completed = true;
             }
