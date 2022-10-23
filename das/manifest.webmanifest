@@ -4,8 +4,8 @@
     "description": "DAS as PWA",
     "scope": "/das/",
     "start_url": "/das/",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "background_color": "#eb5528",
+    "theme_color": "#eb5528",
     "display": "fullscreen",
     "icons": [
         {
